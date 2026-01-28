@@ -2,13 +2,13 @@ plugin: amazon.aws.aws_ec2
 regions:
   - us-east-1
 filters:
-  "tag:Owner": "yoav_target*"    # החזרנו את הסינון - עכשיו תראה רק את השרת שלך
+  "tag:Owner": "yoav_target*" 
 keyed_groups:
   - key: tags.Name
-    prefix: name      # בלי קו תחתון
+    prefix: name      
   - key: tags.Service
-    prefix: service   # בלי קו תחתון (ימנע את service__nginx)
+    prefix: service   
   - key: tags.Restart
-    prefix: restart   # בלי קו תחתון
+    prefix: restart  
 compose:
   ansible_host: public_ip_address
