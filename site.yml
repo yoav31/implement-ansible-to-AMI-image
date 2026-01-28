@@ -1,14 +1,61 @@
 ---
-- name: Manage MySQL Servers
-  hosts: service_mysql       
+- name: Exercise Solution - Amazon Linux Version 
+  hosts: all
   become: yes
-  remote_user: ec2-user
-  roles:
-    - mysql
+  remote_user: ec2-user       
+  gather_facts: yes
 
-- name: Manage Nginx Servers
-  hosts: service_nginx      
-  become: yes
-  remote_user: ec2-user
-  roles:
-    - nginx
+  tasks:
+    - name: Verify Owner Tag
+      fail:
+        msg: "This server implies not owned by yoavvaknin"
+      when: "'Owner' not in tags or tags.Owner != 'yoavvaknin'"
+
+    - name: Update Hostname
+      hostname:
+        name: "{{ ec2_name }}"
+      when: ec2_name is defined
+
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+      when: target_service == 'nginx'
+
+    - name: Install MySQL (MariaDB)
+      yum:
+        name: mariadb-server
+        state: present
+      when: target_service == 'mysql'
+
+    - name: Start Nginx Service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      when: target_service == 'nginx'
+
+    - name: Start MySQL Service
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+      when: target_service == 'mysql'
+
+    - name: Set Cron for Restart (Sunday 6am)
+      cron:
+        name: "Scheduled Restart"
+        minute: "0"
+        hour: "6"
+        weekday: "0"
+        job: "/sbin/shutdown -r now"
+      when: restart_policy == 'Sunday at 6:00 am'
+
+    - name: Set Cron for Restart (Saturday Midnight)
+      cron:
+        name: "Scheduled Restart"
+        minute: "0"
+        hour: "0"
+        weekday: "6"
+        job: "/sbin/shutdown -r now"
+      when: restart_policy == 'Saturday at midnight'
