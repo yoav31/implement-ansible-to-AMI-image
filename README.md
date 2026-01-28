@@ -25,3 +25,5 @@ Configure all relevant servers using the dynamic inventory:
 ```bash
 ansible-playbook -i aws_ec2.yml site.yml \
   --private-key /path/to/your-key.pem
+
+
