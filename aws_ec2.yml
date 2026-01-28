@@ -1,18 +1,14 @@
-plugin: aws_ec2
+plugin: amazon.aws.aws_ec2
 regions:
   - us-east-1
-boto_profile: default
 filters:
-  "tag:Owner": "yoavvaknin"
+  "tag:Owner": "yoav_target*"    # החזרנו את הסינון - עכשיו תראה רק את השרת שלך
 keyed_groups:
   - key: tags.Name
-    prefix: name_
+    prefix: name      # בלי קו תחתון
   - key: tags.Service
-    prefix: service_
+    prefix: service   # בלי קו תחתון (ימנע את service__nginx)
   - key: tags.Restart
-    prefix: restart_
+    prefix: restart   # בלי קו תחתון
 compose:
-  ansible_host: public_ip_address 
-hostnames:
-  - tags.Name
-
+  ansible_host: public_ip_address
