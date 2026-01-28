@@ -1,0 +1,18 @@
+plugin: aws_ec2
+regions:
+  - us-east-1
+boto_profile: default
+filters:
+  "tag:Owner": "yoavvaknin"
+keyed_groups:
+  - key: tags.Name
+    prefix: name_
+  - key: tags.Service
+    prefix: service_
+  - key: tags.Restart
+    prefix: restart_
+compose:
+  ansible_host: public_ip_address 
+hostnames:
+  - tags.Name
+

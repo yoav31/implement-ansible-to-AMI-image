@@ -1,0 +1,12 @@
+---
+- name: Manage MySQL Servers
+  hosts: tag_Service_mysql
+  become: yes
+  roles:
+    - mysql
+
+- name: Manage Nginx Servers
+  hosts: tag_Service_nginx
+  become: yes
+  roles:
+    - nginx

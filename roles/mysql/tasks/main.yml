@@ -1,0 +1,34 @@
+---
+- name: Install MySQL
+  package:
+    name: mysql-server
+    state: present
+    version: "{{ ec2_tag_Version | default(omit) }}"
+  when: ec2_tag_Service is defined and ec2_tag_Service == "mysql"
+
+- name: Ensure MySQL is started and enabled
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+  when: ec2_tag_Service is defined and ec2_tag_Service == "mysql"
+
+- name: Set hostname from Name tag
+  hostname:
+    name: "{{ ec2_tag_Name }}"
+  when: ec2_tag_Name is defined
+- name: Schedule server restart based on Restart tag
+  cron:
+    name: "Reboot server"
+    weekday: >-
+      {% set days = {'sunday':0,'monday':1,'tuesday':2,'wednesday':3,'thursday':4,'friday':5,'saturday':6} %}
+      {{ days[ec2_tag_Restart.split(' at ')[0] | lower] }}
+    hour: >-
+      {% set time = ec2_tag_Restart.split(' at ')[1] %}
+      {{ 0 if time == 'midnight' else time.split(':')[0] }}
+    minute: >-
+      {% set time = ec2_tag_Restart.split(' at ')[1] %}
+      {{ 0 if time == 'midnight' else time.split(':')[1] }}
+    job: "/sbin/shutdown -r now"
+  when: ec2_tag_Restart is defined
+
