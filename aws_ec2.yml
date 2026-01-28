@@ -2,13 +2,19 @@ plugin: amazon.aws.aws_ec2
 regions:
   - us-east-1
 filters:
-  "tag:Owner": "yoav_target*" 
+  "tag:Owner": "yoavvaknin"
+  
 keyed_groups:
   - key: tags.Name
-    prefix: name      
+    prefix: name
   - key: tags.Service
-    prefix: service   
+    prefix: service
   - key: tags.Restart
-    prefix: restart  
+    prefix: restart
+
 compose:
   ansible_host: public_ip_address
+  ec2_name: tags.Name
+  target_service: tags.Service | default('')
+  target_version: tags.Version | default('')
+  restart_policy: tags.Restart | default('')
