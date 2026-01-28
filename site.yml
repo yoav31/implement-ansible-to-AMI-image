@@ -1,11 +1,22 @@
 ---
-- name: Exercise Solution - Amazon Linux Version 
+- name: Exercise Solution - Amazon Linux 2023 Version
   hosts: all
   become: yes
-  remote_user: ec2-user       
+  remote_user: ec2-user
   gather_facts: yes
 
   tasks:
+    - name: Install Cronie (Required for scheduling)
+      yum:
+        name: cronie
+        state: present
+
+    - name: Start Crond Service
+      service:
+        name: crond
+        state: started
+        enabled: yes
+
     - name: Verify Owner Tag
       fail:
         msg: "This server implies not owned by yoavvaknin"
@@ -21,10 +32,10 @@
         name: nginx
         state: present
       when: target_service == 'nginx'
-
-    - name: Install MySQL (MariaDB)
+      
+    - name: Install MySQL (MariaDB 10.5)
       yum:
-        name: mariadb-server
+        name: mariadb105-server
         state: present
       when: target_service == 'mysql'
 
